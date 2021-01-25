@@ -153,6 +153,31 @@
                         </md-card-title-text>
                     </md-card-title>
                 </md-card>
+
+                <md-card>
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">
+                                Scale function
+                            </span>
+                            <div layout-gt-sm="row">
+                                <md-input-container class="md-block" flex-gt-sm>
+                                    <label>Scale function to</label>
+                                    <textarea ng-model="invocation.scaleTarget" class="monospace" cols="10" rows="1"></textarea>
+                                </md-input-container>
+                            </div>
+                            <div layout-gt-sm="row">
+                                <md-input-container class="md-block" flex-gt-sm>
+                                    <button ng-click="scaleFunction()" class="md-raised md-button md-ink-ripple" type="button">
+                                        <span class="ng-scope">Start</span><div class="md-ripple-container"></div>
+                                    </button>
+                                </md-input-container>
+                            </div>
+                        </md-card-title-text>
+                    </md-card-title>
+                </md-card>
+
+
                 <md-card>
                     <md-card-title>
                         <md-card-title-text>
@@ -162,7 +187,7 @@
                             </span>
                             <div layout-gt-sm="row">
                                 <md-input-container class="md-block" flex-gt-sm>
-                                    <button ng-click="fireRequest()" class="md-raised md-button md-ink-ripple" type="button" ng-disabled="invocationInProgress || (selectedFunction && !selectedFunction.ready)">
+                                    <button ng-click="fireRequest()" class="md-raised md-button md-ink-ripple" type="button" ng-disabled="invocationInProgress">
                                         <span class="ng-scope">Invoke</span><div class="md-ripple-container"></div>
                                     </button>
                                 </md-input-container>

@@ -62,9 +62,10 @@ app.controller("home", ['$scope', '$log', '$http', '$location', '$interval', '$f
         };
 
         $scope.invocation.request = "";
+        $scope.invocation.scaleTarget = "";
 
-        var fetchFunctionsDelay = 3500;
-        var queryFunctionDelay = 2500;
+        var fetchFunctionsDelay = 2500;
+        var queryFunctionDelay = 1500;
 
 
 
@@ -101,6 +102,7 @@ app.controller("home", ['$scope', '$log', '$http', '$location', '$interval', '$f
             $http.get(buildNamespaceAwareURL(url, $scope.selectedNamespace))
             .then(function(response) {
                $scope.selectedFunction.ready = (response.data && response.data.availableReplicas && response.data.availableReplicas > 0);
+               $scope.selectedFunction.replicas = response.data ? response.data.availableReplicas : 0;
             })
             .catch(function(err) {
                 console.error(err);
@@ -114,6 +116,19 @@ app.controller("home", ['$scope', '$log', '$http', '$location', '$interval', '$f
                 .position("top right")
                 .hideDelay(duration || 500)
             );
+        };
+
+        $scope.scaleFunction = function() {
+            var fnNamespace = ($scope.selectedNamespace && $scope.selectedNamespace.length > 0) ? "." + $scope.selectedNamespace : "";
+            var options = {
+                url: "../system/scale-function/" + $scope.selectedFunction.name + fnNamespace,
+                data: "{\"serviceName\":\"" + $scope.selectedFunction.name + fnNamespace + "\"," + "\"replicas\":" + $scope.invocation.scaleTarget + "}",
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            };
+            $http(options).then(function(response){}).catch(function(error1){
+                showPostInvokedToast("Error " + error1.statusText + "\n" + error1.data)
+            });
         };
 
         $scope.fireRequest = function() {
