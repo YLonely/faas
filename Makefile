@@ -3,7 +3,7 @@ NS?=openfaas
 
 .PHONY: build-gateway
 build-gateway:
-	(cd gateway;  docker buildx build --platform linux/amd64 -t $NS/gateway:latest-dev .)
+	(buildctl build --opt build-arg:http_proxy=$http_proxy --opt build-arg:https_proxy=$https_proxy --frontend=dockerfile.v0 --local context=./gateway/ --local dockerfile=./gateway/ --output type=image,name=docker.io/lwyan/gateway:latest)
 
 # .PHONY: test-ci
 # test-ci:

@@ -3,6 +3,7 @@ package scaling
 import (
 	"fmt"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -94,37 +95,43 @@ func (f *FunctionScaler) Scale(functionName, namespace string) FunctionScaleResu
 			}
 		}
 
-		for i := 0; i < int(f.Config.MaxPollCount); i++ {
-			queryResponse, err := f.Config.ServiceQuery.GetReplicas(functionName, namespace)
-			if err == nil {
-				f.Cache.Set(functionName, namespace, queryResponse)
-			}
-			totalTime := time.Since(start)
-
-			if err != nil {
-				return FunctionScaleResult{
-					Error:     err,
-					Available: false,
-					Found:     true,
-					Duration:  totalTime,
+		if queryResponse.Labels != nil && startFromCheckpoint(*queryResponse.Labels) {
+			// if this is a container restored from checkpoint, we just wait 100ms
+			time.Sleep(100 * time.Millisecond)
+		} else {
+			for i := 0; i < int(f.Config.MaxPollCount); i++ {
+				queryResponse, err := f.Config.ServiceQuery.GetReplicas(functionName, namespace)
+				if err == nil {
+					f.Cache.Set(functionName, namespace, queryResponse)
 				}
-			}
+				totalTime := time.Since(start)
 
-			if queryResponse.AvailableReplicas > 0 {
-
-				log.Printf("[Scale] function=%s 0 => %d successful - %fs",
-					functionName, queryResponse.AvailableReplicas, totalTime.Seconds())
-
-				return FunctionScaleResult{
-					Error:     nil,
-					Available: true,
-					Found:     true,
-					Duration:  totalTime,
+				if err != nil {
+					return FunctionScaleResult{
+						Error:     err,
+						Available: false,
+						Found:     true,
+						Duration:  totalTime,
+					}
 				}
-			}
 
-			time.Sleep(f.Config.FunctionPollInterval)
+				if queryResponse.AvailableReplicas > 0 {
+
+					log.Printf("[Scale] function=%s 0 => %d successful - %fs",
+						functionName, queryResponse.AvailableReplicas, totalTime.Seconds())
+
+					return FunctionScaleResult{
+						Error:     nil,
+						Available: true,
+						Found:     true,
+						Duration:  totalTime,
+					}
+				}
+
+				time.Sleep(f.Config.FunctionPollInterval)
+			}
 		}
+
 	}
 
 	return FunctionScaleResult{
@@ -153,4 +160,13 @@ func backoff(r routine, attempts int, interval time.Duration) error {
 		time.Sleep(interval)
 	}
 	return err
+}
+
+func startFromCheckpoint(labels map[string]string) bool {
+	for key := range labels {
+		if strings.HasPrefix(key, "checkpoint-") {
+			return true
+		}
+	}
+	return false
 }

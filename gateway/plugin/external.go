@@ -122,6 +122,7 @@ func (s ExternalServiceQuery) GetReplicas(serviceName, serviceNamespace string) 
 		ScalingFactor:     scalingFactor,
 		AvailableReplicas: availableReplicas,
 		Annotations:       function.Annotations,
+		Labels:            function.Labels,
 	}, err
 }
 
