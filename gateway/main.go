@@ -141,11 +141,12 @@ func main() {
 	faasHandlers.LogProxyHandler = handlers.NewLogHandlerFunc(*config.LogsProviderURL, config.WriteTimeout)
 
 	scalingConfig := scaling.ScalingConfig{
-		MaxPollCount:         uint(1000),
-		SetScaleRetries:      uint(20),
-		FunctionPollInterval: time.Millisecond * 100,
-		CacheExpiry:          time.Second * 5, // freshness of replica values before going stale
-		ServiceQuery:         externalServiceQuery,
+		MaxPollCount:                  uint(1000),
+		SetScaleRetries:               uint(20),
+		FunctionPollInterval:          time.Millisecond * 100,
+		CacheExpiry:                   time.Second * 5, // freshness of replica values before going stale
+		ServiceQuery:                  externalServiceQuery,
+		CheckpointServiceWaitInterval: config.CheckpointServiceWaitInterval,
 	}
 
 	functionProxy := faasHandlers.Proxy

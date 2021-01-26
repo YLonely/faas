@@ -64,6 +64,7 @@ func (ReadConfig) Read(hasEnv HasEnv) (*GatewayConfig, error) {
 	cfg.ReadTimeout = parseIntOrDurationValue(hasEnv.Getenv("read_timeout"), defaultDuration)
 	cfg.WriteTimeout = parseIntOrDurationValue(hasEnv.Getenv("write_timeout"), defaultDuration)
 	cfg.UpstreamTimeout = parseIntOrDurationValue(hasEnv.Getenv("upstream_timeout"), defaultDuration)
+	cfg.CheckpointServiceWaitInterval = parseIntOrDurationValue(hasEnv.Getenv("checkpoint_service_wait_interval"), 150*time.Millisecond)
 
 	if len(hasEnv.Getenv("functions_provider_url")) > 0 {
 		var err error
@@ -243,6 +244,8 @@ type GatewayConfig struct {
 
 	// Namespace for endpoints
 	Namespace string
+
+	CheckpointServiceWaitInterval time.Duration
 }
 
 // UseNATS Use NATSor not
