@@ -121,13 +121,15 @@ app.controller("home", ['$scope', '$log', '$http', '$location', '$interval', '$f
         $scope.scaleFunction = function() {
             var fnNamespace = ($scope.selectedNamespace && $scope.selectedNamespace.length > 0) ? "." + $scope.selectedNamespace : "";
             var options = {
-                url: "../system/scale-function/" + $scope.selectedFunction.name + fnNamespace,
+                url: "../system/scale-function/" + $scope.selectedFunction.name,
                 data: "{\"serviceName\":\"" + $scope.selectedFunction.name + fnNamespace + "\"," + "\"replicas\":" + $scope.invocation.scaleTarget + "}",
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
             };
-            $http(options).then(function(response){}).catch(function(error1){
-                showPostInvokedToast("Error " + error1.statusText + "\n" + error1.data)
+            $http(options).then(function(response){
+                showPostInvokedToast("Success");
+            }).catch(function(error1){
+                showPostInvokedToast("Error " + error1.statusText + "\n" + error1.data);
             });
         };
 
