@@ -16,8 +16,6 @@ type ScalingConfig struct {
 	// CacheExpiry life-time for a cache entry before considering invalid
 	CacheExpiry time.Duration
 
-	CheckpointServiceWaitInterval time.Duration
-
 	// ServiceQuery queries available/ready replicas for function
 	ServiceQuery ServiceQuery
 

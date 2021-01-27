@@ -96,8 +96,7 @@ func (f *FunctionScaler) Scale(functionName, namespace string) FunctionScaleResu
 		}
 
 		if queryResponse.Labels != nil && startFromCheckpoint(*queryResponse.Labels) {
-			// if this is a container restored from checkpoint, we just wait 100ms
-			time.Sleep(f.Config.CheckpointServiceWaitInterval)
+			log.Printf("%s.%s is a service started from checkpoint, do not wait for it", functionName, namespace)
 		} else {
 			for i := 0; i < int(f.Config.MaxPollCount); i++ {
 				queryResponse, err := f.Config.ServiceQuery.GetReplicas(functionName, namespace)
